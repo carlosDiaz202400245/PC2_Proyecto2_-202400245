@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Riego Automatizado - GuateRiegos 2.0</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid #27ae60;
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        select, input[type="file"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #27ae60;
+        }
+
+        .btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #219a52;
+        }
+
+        .btn-secondary {
+            background: #3498db;
+        }
+
+        .btn-secondary:hover {
+            background: #2980b9;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-container {
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            background: #f8f9fa;
+        }
+
+        .tab.active {
+            background: white;
+            border-color: #ddd;
+            border-bottom: 1px solid white;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Sistema de Riego Automatizado</h1>
+            <p>GuateRiegos 2.0 - Optimización de recursos para invernaderos</p>
+        </header>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('cargar')"> Cargar Configuración</div>
+                <div class="tab" onclick="showTab('reportes')"> Reportes y Simulación</div>
+                <div class="tab" onclick="showTab('graficos')"> Gráficos TDAs</div>
+                <div class="tab" onclick="showTab('ayuda')"> Ayuda</div>
+            </div>
+
+            <!-- PESTAÑA 1: Cargar Configuración -->
+            <div id="cargar" class="tab-content active">
+                <div class="card">
+                    <h2> Cargar Archivo de Configuración</h2>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="archivoConfig">Seleccionar archivo XML:</label>
+                            <input type="file" id="archivoConfig" name="archivo" accept=".xml" required>
+                        </div>
+                        <button type="submit" class="btn"> Cargar Configuración</button>
+                    </form>
+                </div>
+                <div id="statusCargar" class="status hidden"></div>
+            </div>
+
+            <!-- PESTAÑA 2: Reportes y Simulación (COMBINADA) -->
+            <div id="reportes" class="tab-content">
+                <div class="card">
+                    <h2> Reportes y Simulación de Riego</h2>
+                    <div class="form-group">
+                        <label for="selectInvernaderoReporte">Invernadero:</label>
+                        <select id="selectInvernaderoReporte" onchange="cargarPlanesReporte()">
+                            <option value="">-- Seleccionar invernadero --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="selectPlanReporte">Plan de Riego:</label>
+                        <select id="selectPlanReporte" disabled>
+                            <option value="">-- Primero seleccione un invernadero --</option>
+                        </select>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn" onclick="generarReporteHTML()"> Generar Reporte HTML</button>
+                        <button class="btn btn-secondary" onclick="generarSalidaXML()"> Generar Archivo XML</button>
+                        <button class="btn btn-warning" onclick="simularYVer()">⚙ Simular y Ver Resultados</button>
+                    </div>
+                </div>
+                <div id="statusReportes" class="status hidden"></div>
+            </div>
+
+            <!-- PESTAÑA 3: Gráficos TDAs  -->
+            <div id="graficos" class="tab-content">
+                <div class="card">
+                    <h2> Generar Gráficos de TDAs</h2>
+                    <div class="form-group">
+                        <label for="selectInvernaderoGrafico">Invernadero:</label>
+                        <select id="selectInvernaderoGrafico" onchange="cargarPlanesGrafico()">
+                            <option value="">-- Seleccionar invernadero --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="selectPlanGrafico">Plan de Riego:</label>
+                        <select id="selectPlanGrafico" disabled>
+                            <option value="">-- Primero seleccione un invernadero --</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="button-group">
+                        <button class="btn btn-warning" onclick="generarGraficos()">📊 Generar Gráficos Graphviz</button>
+                    </div>
+                </div>
+                <div id="statusGraficos" class="status hidden"></div>
+            </div>
+
+            <!-- PESTAÑA 4: Ayuda -->
+            <div id="ayuda" class="tab-content">
+                <div class="card">
+                    <h2> Información del Sistema</h2>
+                    <p><strong>Nombre:</strong> Carlos Eduardo Díaz Chacón</p>
+                    <p><strong>Carnet:</strong> 202400245</p>
+                    <p><strong>Curso:</strong> IPC2-Laboratorio</p>
+                    <p><strong>Sistema:</strong> GuateRiegos 2.0</p>
+                    <p><strong>Versión:</strong> 2.0</p>
+                    <p><strong>repositoriox:</strong> https://github.com/carlosDiaz202400245/PC2_Proyecto2_-202400245</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Sistema de Riego Automatizado - Universidad de San Carlos de Guatemala</p>
+        </footer>
+    </div>
+
+    <script>
+        // Funciones para pestañas
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if (tabName === 'reportes' || tabName === 'graficos') {
+                cargarInvernaderos();
+            }
+        }
+
+        // Cargar invernaderos desde el servidor
+        async function cargarInvernaderos() {
+            try {
+                const response = await fetch('/invernaderos');
+                const data = await response.json();
+
+                const selectReporte = document.getElementById('selectInvernaderoReporte');
+                const selectGrafico = document.getElementById('selectInvernaderoGrafico');
+
+                selectReporte.innerHTML = '<option value="">-- Seleccionar invernadero --</option>';
+                selectGrafico.innerHTML = '<option value="">-- Seleccionar invernadero --</option>';
+
+                data.invernaderos.forEach(inv => {
+                    const option = `<option value="${inv.nombre}">${inv.nombre}</option>`;
+                    selectReporte.innerHTML += option;
+                    selectGrafico.innerHTML += option;
+                });
+            } catch (error) {
+                console.error('Error cargando invernaderos:', error);
+                mostrarError('statusCargar', 'Error cargando invernaderos: ' + error.message);
+            }
+        }
+
+        // Función para reportes
+        async function cargarPlanesReporte() {
+            const invernadero = document.getElementById('selectInvernaderoReporte').value;
+            const selectPlan = document.getElementById('selectPlanReporte');
+            await cargarPlanesGenerico(invernadero, selectPlan);
+        }
+
+        // Función para gráficos
+        async function cargarPlanesGrafico() {
+            const invernadero = document.getElementById('selectInvernaderoGrafico').value;
+            const selectPlan = document.getElementById('selectPlanGrafico');
+            await cargarPlanesGenerico(invernadero, selectPlan);
+        }
+
+        // fun. que uso para cargar planes
+        async function cargarPlanesGenerico(invernadero, selectPlan) {
+            if (!invernadero) {
+                selectPlan.disabled = true;
+                selectPlan.innerHTML = '<option value="">-- Primero seleccione un invernadero --</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/invernaderos');
+                const data = await response.json();
+
+                const invernaderoData = data.invernaderos.find(inv => inv.nombre === invernadero);
+
+                if (invernaderoData) {
+                    selectPlan.disabled = false;
+                    selectPlan.innerHTML = '<option value="">-- Seleccionar plan --</option>';
+
+                    invernaderoData.planes.forEach(plan => {
+                        selectPlan.innerHTML += `<option value="${plan.nombre}">${plan.nombre}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando planes:', error);
+                selectPlan.disabled = true;
+                selectPlan.innerHTML = '<option value="">-- Error cargando planes --</option>';
+            }
+        }
+
+        // enviar el form de carga
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('archivo', document.getElementById('archivoConfig').files[0]);
+
+            try {
+                const response = await fetch('/cargar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.text();
+                mostrarEstado('statusCargar', result, response.ok);
+
+                if (response.ok) {
+                    cargarInvernaderos();
+                }
+            } catch (error) {
+                console.error('Error cargando archivo:', error);
+                mostrarError('statusCargar', 'Error cargando archivo: ' + error.message);
+            }
+        });
+
+        // Función combinada para simular y ver
+        async function simularYVer() {
+            const invernadero = document.getElementById('selectInvernaderoReporte').value;
+            const plan = document.getElementById('selectPlanReporte').value;
+
+            if (!invernadero || !plan) {
+                alert('Por favor seleccione un invernadero y un plan de riego');
+                return;
+            }
+
+            const invernaderoCodificado = encodeURIComponent(invernadero);
+            const planCodificado = encodeURIComponent(plan);
+
+            window.open(`/simular/${invernaderoCodificado}/${planCodificado}`, '_blank');
+        }
+
+        // Generar reporte HTML
+        async function generarReporteHTML() {
+            const invernadero = document.getElementById('selectInvernaderoReporte').value;
+            const plan = document.getElementById('selectPlanReporte').value;
+
+            if (!invernadero || !plan) {
+                alert('Por favor seleccione un invernadero y un plan de riego');
+                return;
+            }
+
+            try {
+                const invernaderoCodificado = encodeURIComponent(invernadero);
+                const planCodificado = encodeURIComponent(plan);
+
+                const response = await fetch(`/generar_reporte/${invernaderoCodificado}/${planCodificado}`);
+                const result = await response.text();
+
+                mostrarEstado('statusReportes', result, response.ok);
+
+                if (response.ok) {
+                    setTimeout(() => {
+                        window.open(`/reportes/reporte_${invernadero}_${plan}.html`, '_blank');
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Error generando reporte:', error);
+                mostrarError('statusReportes', 'Error generando reporte: ' + error.message);
+            }
+        }
+
+        // Generar archivo XML de salida
+        async function generarSalidaXML() {
+            try {
+                const response = await fetch('/generar_salida');
+                const result = await response.text();
+                mostrarEstado('statusReportes', result, response.ok);
+            } catch (error) {
+                console.error('Error generando XML:', error);
+                mostrarError('statusReportes', 'Error generando XML: ' + error.message);
+            }
+        }
+
+        // Generar gráficos Graphviz
+        async function generarGraficos() {
+            const invernadero = document.getElementById('selectInvernaderoGrafico').value;
+            const plan = document.getElementById('selectPlanGrafico').value;
+
+            if (!invernadero || !plan) {
+                alert('Por favor seleccione un invernadero y un plan de riego');
+                return;
+            }
+
+            try {
+                const invernaderoCodificado = encodeURIComponent(invernadero);
+                const planCodificado = encodeURIComponent(plan);
+
+
+                const response = await fetch(`/generar_graficos/${invernaderoCodificado}/${planCodificado}/0`);
+                const result = await response.text();
+
+                if (response.ok) {
+                    window.open(`/ver_graficos/${invernaderoCodificado}/${planCodificado}/0`, '_blank');
+                    mostrarEstado('statusGraficos', 'Gráficos generados exitosamente', true);
+                } else {
+                    mostrarError('statusGraficos', result);
+                }
+            } catch (error) {
+                console.error('Error generando gráficos:', error);
+                mostrarError('statusGraficos', 'Error generando gráficos: ' + error.message);
+            }
+        }
+
+        // Funciones auxiliares
+        function mostrarEstado(elementoId, mensaje, esExitoso) {
+            const elemento = document.getElementById(elementoId);
+            elemento.className = esExitoso ? 'status success' : 'status error';
+            elemento.textContent = mensaje;
+            elemento.classList.remove('hidden');
+        }
+
+        function mostrarError(elementoId, mensaje) {
+            mostrarEstado(elementoId, mensaje, false);
+        }
+
+        // Cargar invernaderos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarInvernaderos();
+        });
+    </script>
+</body>
+</html>

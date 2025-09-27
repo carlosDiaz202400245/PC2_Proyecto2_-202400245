@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación Riego</title>
+    <style>
+        <style>
+    .instrucciones-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 14px;
+    }
+    .instrucciones-table th,
+    .instrucciones-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    .instrucciones-table th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .instrucciones-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .accion-regar { color: #2196F3; font-weight: bold; }
+    .accion-mover { color: #FF9800; }
+    .accion-esperar { color: #757575; }
+    .accion-fin { color: #4CAF50; font-weight: bold; }
+</style>
+    </style>
+</head>
+<body>
+    <h1>Resultados de Simulación</h1>
+
+
+    <h2>Invernadero: {{ datos.get('invernadero', 'No disponible') }}</h2>
+    <h2>Plan: {{ datos.get('plan', 'No disponible') }}</h2>
+
+    <h3>Estadísticas Generales</h3>
+    <p><strong>Tiempo óptimo:</strong> {{ datos.get('tiempo_optimo', 0) }} segundos</p>
+    <p><strong>Agua total utilizada:</strong> {{ datos.get('agua_total', 0) }} litros</p>
+    <p><strong>Fertilizante total utilizado:</strong> {{ datos.get('fertilizante_total', 0) }} gramos</p>
+
+    <h3>Instrucciones por Tiempo - DEBUG</h3>
+<table class="instrucciones-table">
+    <tr>
+        <th>Tiempo (s)</th>
+        <th>Debug Info</th>
+    </tr>
+
+    {% for instruccion_tiempo in datos.get('instrucciones_por_tiempo', []) %}
+    <tr>
+        <td><strong>{{ instruccion_tiempo.segundo }}</strong></td>
+        <td>
+            {% if instruccion_tiempo.instrucciones_drones %}
+                {% for instr_dron in instruccion_tiempo.instrucciones_drones %}
+                    {{ instr_dron.nombre_dron }}: {{ instr_dron.accion }}<br>
+                {% endfor %}
+            {% else %}
+                 SIN INSTRUCCIONES
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <h3>Estadísticas por Dron</h3>
+    <table>
+        <tr>
+            <th>Dron</th>
+            <th>Hilera</th>
+            <th>Agua Usada (L)</th>
+            <th>Fertilizante Usado (g)</th>
+        </tr>
+        {% with drones = datos.get('drones') %}
+            {% if drones %}
+                {% for dron in drones %}
+                <tr>
+                    <td>{{ dron.nombre }}</td>
+                    <td>H{{ dron.hilera_asignada }}</td>
+                    <td>{{ dron.agua_usada }}</td>
+                    <td>{{ dron.fertilizante_usado }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">No hay drones asignados</td>
+                </tr>
+            {% endif %}
+        {% endwith %}
+    </table>
+
+    <br>
+    <a href="/">Volver al inicio</a>
+
+
+    <div style="margin-top: 50px; padding: 10px; background: #f0f0f0;">
+        <h4>Retroalimentacion</h4>
+        <p>Invernadero: {{ datos.get('invernadero', 'NO') }}</p>
+        <p>Plan: {{ datos.get('plan', 'NO') }}</p>
+        <p>Tiempo: {{ datos.get('tiempo_optimo', 'NO') }}</p>
+        <p>Instrucciones: {{ datos.get('instrucciones_por_tiempo', 'NO')|length }} elementos</p>
+        <p>Drones: {{ datos.get('drones', 'NO')|length }} elementos</p>
+    </div>
+</body>
+</html>

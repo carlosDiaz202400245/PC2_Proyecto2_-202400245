@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos TDAs - GuateRiegos 2.0</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
+        .grafico { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .grafico img { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        .btn { background: #27ae60; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gráficos de TDAs</h1>
+            <h2>Invernadero: {{ graficos.invernadero }} | Plan: {{ graficos.plan }} | Tiempo: {{ graficos.tiempo }}s</h2>
+        </div>
+
+        <div class="grafico">
+            <h3>Sistema Completo</h3>
+            <img src="{{ url_for('static', filename=graficos.grafico_sistema) }}" alt="Sistema Completo" onerror="this.style.display='none'">
+        </div>
+
+        <div class="grafico">
+            <h3>Invernadero: {{ graficos.invernadero }}</h3>
+            <img src="{{ url_for('static', filename=graficos.grafico_invernadero) }}" alt="Invernadero" onerror="this.style.display='none'">
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="btn"> Volver al Inicio</a>
+            <button onclick="window.close()" class="btn" style="background: #e74c3c;"> Cerrar</button>
+        </div>
+    </div>
+</body>
+</html>

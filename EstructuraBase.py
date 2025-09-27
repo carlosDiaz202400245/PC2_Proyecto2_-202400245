@@ -47,12 +47,6 @@ class ListaEnlazada:
     def __str__(self):
         return "[" + ", ".join(str(item) for item in self) + "]"
 
-    def __iter__(self):
-        actual = self.cabeza
-        while actual is not None:
-            yield actual.dato
-            actual = actual.siguiente
-
     def __len__(self):
         return self.longitud
 class Cola:
@@ -134,11 +128,23 @@ class DiccionarioSimple:
         self.claves.agregar(clave)
         self.valores.agregar(valor)
 
+    def get(self, clave, default=None):
+
+        valor = self.obtener(clave)
+        return valor if valor is not None else default
+
     def obtener(self, clave):
         for i in range(len(self.claves)):
             if self.claves.obtener(i) == clave:
                 return self.valores.obtener(i)
         return None
+
+    def items(self):
+
+        items_lista = ListaEnlazada()
+        for clave, valor in self:
+            items_lista.agregar((clave, valor))
+        return items_lista
 
     def __iter__(self):
         for i in range(len(self.claves)):
@@ -147,7 +153,7 @@ class DiccionarioSimple:
 class ListaSerializable(ListaEnlazada):
     def to_dict(self):
         """Convierte la lista enlazada a formato serializable sin usar listas nativas"""
-        # Creamos una cadena JSON manualmente
+        # Creamos una cadena JSON manualmente por lo de las estructuras nativas y poder ver el procesoooo
         json_str = "["
         primero = True
 
@@ -172,7 +178,7 @@ class ListaSerializable(ListaEnlazada):
 
 class JsonSerializable:
     def to_dict(self):
-        """Convierte el objeto a string JSON manualmente"""
+        """Convierte el objeto a string JSON a manitax"""
         raise NotImplementedError("Método to_dict debe ser implementado")
 
     def _serializar_valor(self, valor):
